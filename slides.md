@@ -163,8 +163,6 @@ layout: default
 
 <div class="text-sm">
 
-<v-clicks>
-
 **这是 JavaScript 最著名的 bug，从第一版就存在，可能永远不会被修复。**
 
 **类型标签机制 (Type Tag)：** 最初实现中，值以 32 位存储，低 1-3 bits 为类型标签：
@@ -179,8 +177,6 @@ var a = null;
 (!a && typeof a === "object"); // true — 唯一的 falsy object
 // 曾有 TC39 提案修复，但因会破坏太多现有代码而被否决
 ```
-
-</v-clicks>
 
 </div>
 
@@ -250,8 +246,6 @@ layout: default
 
 <div class="text-sm">
 
-<v-clicks>
-
 **场景一：DEBUG 模式检查**
 
 ```javascript {monaco}
@@ -273,8 +267,6 @@ function isNode() {
     && typeof process.versions?.node !== "undefined";
 }
 ```
-
-</v-clicks>
 
 <v-click>
 
@@ -375,8 +367,6 @@ layout: default
 
 <div class="text-sm">
 
-<v-clicks>
-
 **JavaScript 数组可以容纳任何类型的值，不需要预先声明大小。**
 
 **陷阱一：稀疏数组 (Sparse Array)**
@@ -398,8 +388,6 @@ a.length;           // 14！不是 1
 a["foobar"] = "baz";
 a.length;           // 14（非数字键不影响 length）
 ```
-
-</v-clicks>
 
 **建议：** 使用 `Array.from()` 或展开运算符处理类数组对象，避免稀疏数组。
 
@@ -470,8 +458,6 @@ layout: default
 
 <div class="text-sm">
 
-<v-clicks>
-
 **JavaScript 的 number 基于 IEEE 754 "双精度"64 位格式：** 1bit 符号 + 11bits 指数 + 52bits 尾数
 
 **有趣的数字语法：**
@@ -485,8 +471,6 @@ layout: default
 ```
 
 **注意：** JavaScript 没有"整数"类型。`42` 和 `42.0` 完全相同，所有数字都是浮点数。
-
-</v-clicks>
 
 </div>
 
@@ -539,8 +523,6 @@ layout: default
 
 <div class="text-sm">
 
-<v-clicks>
-
 **Number.MAX_SAFE_INTEGER = 2^53 - 1 = 9007199254740991**
 
 ```javascript {monaco}
@@ -562,8 +544,6 @@ typeof big; // "bigint" — 第八种类型
 **业务场景：** 后端大 ID（雪花ID）超 2^53 时，JSON.parse 丢精度。解决：让后端返回字符串，或用 `json-bigint` 库。
 
 </div>
-
-</v-clicks>
 
 </div>
 
@@ -634,8 +614,6 @@ layout: default
 
 <div class="text-sm">
 
-<v-clicks>
-
 ```javascript {monaco}
 typeof NaN; // "number" — 讽刺吧？更准确的理解：NaN 是"无效数值"
 var a = 2 / "foo"; // NaN
@@ -657,8 +635,6 @@ Number.isNaN(NaN);   // true ✅
 // Polyfill: Number.isNaN = n => n !== n;
 ```
 
-</v-clicks>
-
 </div>
 
 ---
@@ -668,8 +644,6 @@ layout: default
 # -0 与 Object.is()
 
 <div class="text-sm">
-
-<v-clicks>
 
 **负零：一个被隐藏的值**
 
@@ -690,8 +664,6 @@ Object.is(-0, 0);    // false ✅（=== 返回 true）
 Object.is(42, 42);   // true（正常情况和 === 一致）
 // 性能提示：Object.is() 比 === 慢，只在需要区分 NaN/-0 时使用
 ```
-
-</v-clicks>
 
 </div>
 
@@ -764,8 +736,6 @@ layout: default
 
 <div class="text-sm">
 
-<v-clicks>
-
 **函数参数传递的是引用的副本，不是引用本身。**
 
 ```javascript {monaco}
@@ -789,8 +759,6 @@ x=[4,5,6]：a ──→ [1,2,3,4]  x ──→ [4,5,6] ❌ 分离了
 
 **结论：** 重新赋值 ≠ 修改。`x.push()` 修改引用指向的值；`x = [...]` 改变 x 本身的指向。
 
-</v-clicks>
-
 </div>
 
 ---
@@ -800,8 +768,6 @@ layout: default
 # 业务实践：不可变数据
 
 <div class="text-sm">
-
-<v-clicks>
 
 **经典 Redux bug：**
 
@@ -824,8 +790,6 @@ const clone = structuredClone({ a: 1, b: { c: 2 }, d: new Date() });
 // 支持 Date/Map/Set/ArrayBuffer，不支持函数和 DOM 节点
 // 替代 JSON.parse(JSON.stringify(...)) 的笨方法
 ```
-
-</v-clicks>
 
 </div>
 
@@ -913,8 +877,6 @@ layout: default
 
 <div class="text-sm">
 
-<v-clicks>
-
 **JavaScript 的内置原生函数：** `String()` `Number()` `Boolean()` `Array()` `Object()` `Function()` `RegExp()` `Date()` `Error()` `Symbol()`
 
 **内部 [[Class]] 属性 — 值的"身份证"**
@@ -931,8 +893,6 @@ Object.prototype.toString.call(42);        // "[object Number]"
 
 **ES6 扩展：** `Symbol.toStringTag` 允许自定义 `toString` 标签。
 
-</v-clicks>
-
 </div>
 
 ---
@@ -942,8 +902,6 @@ layout: default
 # 封装（装箱）与拆封
 
 <div class="text-sm">
-
-<v-clicks>
 
 **自动装箱 (Auto-Boxing)**
 
@@ -968,8 +926,6 @@ a.valueOf(); // "abc" — 拆封得到原始值
 **引擎优化提示：** 不要手动装箱（`new String("abc")`），引擎对原始值的优化远比包装对象好。
 
 </div>
-
-</v-clicks>
 
 </div>
 
@@ -1019,8 +975,6 @@ layout: default
 
 <div class="text-sm">
 
-<v-clicks>
-
 ```javascript {monaco}
 // 只传一个数字参数时 — 它是长度，不是元素！
 var a = new Array(3);
@@ -1039,8 +993,6 @@ Array(3).fill(0);                        // [0, 0, 0]
 
 **规则：** 永远不要创建和使用稀疏数组。用 `Array.from()` 或 `Array(n).fill()`。
 
-</v-clicks>
-
 </div>
 
 ---
@@ -1050,8 +1002,6 @@ layout: default
 # Date / Error / Symbol
 
 <div class="text-sm">
-
-<v-clicks>
 
 **Date — 唯一没有字面量形式的原生类型**
 
@@ -1075,8 +1025,6 @@ var sym = Symbol("desc"); // 不能 new Symbol()！
 typeof sym; // "symbol" — 用于对象唯一属性键和内置钩子
 ```
 
-</v-clicks>
-
 </div>
 
 ---
@@ -1086,8 +1034,6 @@ layout: default
 # 原生原型
 
 <div class="text-sm">
-
-<v-clicks>
 
 **原生构造函数的 prototype 本身就是其类型的"空值"实例。**
 
@@ -1107,8 +1053,6 @@ function foo(arr = [], fn = () => {}) {}
 ```
 
 **要点：** 了解原生原型有助于理解对象系统，但实际代码应使用字面量和现代语法。
-
-</v-clicks>
 
 </div>
 
