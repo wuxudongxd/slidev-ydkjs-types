@@ -39,26 +39,24 @@ class: text-center
 
 # 热身测验
 
-<div class="text-left inline-block text-xl">
+<div class="text-left inline-block">
 
-以下表达式的结果是什么？
+**以下表达式的结果是什么？**
 
-<v-clicks>
-
-- `typeof null === "object"` &nbsp;&nbsp; → &nbsp;&nbsp; **true** ✅ &nbsp; 历史 bug！
-- `0.1 + 0.2 === 0.3` &nbsp;&nbsp; → &nbsp;&nbsp; **false** ❌ &nbsp; IEEE 754 浮点精度
-- `NaN === NaN` &nbsp;&nbsp; → &nbsp;&nbsp; **false** ❌ &nbsp; NaN 不等于任何值，包括自己
-- `typeof NaN === "number"` &nbsp;&nbsp; → &nbsp;&nbsp; **true** ✅ &nbsp; "不是数字"的数字
-- `-0 === 0` &nbsp;&nbsp; → &nbsp;&nbsp; **true** ✅ &nbsp; 负零被"善意的谎言"掩盖了
-- `new Boolean(false) ? "truthy" : "falsy"` &nbsp;&nbsp; → &nbsp;&nbsp; **"truthy"** &nbsp; 对象永远是真值！
-
-</v-clicks>
+| 表达式 | 结果 |
+|--------|------|
+| `typeof null === "object"` | <v-click>**true** ✅ 历史 bug！</v-click> |
+| `0.1 + 0.2 === 0.3` | <v-click>**false** ❌ IEEE 754</v-click> |
+| `NaN === NaN` | <v-click>**false** ❌ 唯一不等于自身的值</v-click> |
+| `typeof NaN === "number"` | <v-click>**true** ✅ "无效数值"</v-click> |
+| `-0 === 0` | <v-click>**true** ✅ 被隐藏的负零</v-click> |
+| `new Boolean(false) ? "truthy" : "falsy"` | <v-click>**"truthy"** 对象永远是真值！</v-click> |
 
 </div>
 
 <v-click>
 
-<div class="mt-6 text-lg opacity-80">
+<div class="mt-4 text-lg opacity-80">
 
 如果你没有全答对，这次分享就是为你准备的！
 
@@ -83,11 +81,11 @@ layout: two-cols
 layoutClass: gap-4
 ---
 
-# 七种内置类型 + typeof
+# 八种内置类型 + typeof
 
 <div class="text-sm">
 
-**七种内置类型：**
+**八种内置类型（含 ES2020 BigInt）：**
 
 1. `undefined`
 2. `null`
@@ -96,6 +94,7 @@ layoutClass: gap-4
 5. `string`
 6. `object`
 7. `symbol` (ES6 新增)
+8. `bigint` (ES2020 新增)
 
 </div>
 
@@ -109,6 +108,7 @@ graph TD
     B --> G[number]
     B --> H[string]
     B --> I[symbol]
+    B --> I2[bigint]
     C --> J[object]
     C --> K[function*]
 
@@ -116,11 +116,12 @@ graph TD
     style B fill:#6bb86b,color:#fff
     style C fill:#e6a23c,color:#fff
     style K fill:#e6a23c,color:#fff,stroke-dasharray: 5 5
+    style I2 fill:#6bb86b,color:#fff,stroke-dasharray: 5 5
 ```
 
 <div class="text-xs opacity-60 mt-2">
 
-*function 是 object 的子类型，但 typeof 返回 "function"
+*function 是 object 的子类型; bigint 是 ES2020 新增
 
 </div>
 
@@ -148,7 +149,7 @@ typeof 42n         // "bigint"
 
 <v-click>
 
-**注意：** 七种类型中，typeof 能准确识别六种，唯独 `null` 是个例外。而 `function` 虽然不是顶层类型，typeof 却给了它专属返回值。
+**注意：** 八种类型中，typeof 能准确识别七种，唯独 `null` 是个例外。而 `function` 虽然不是顶层类型，typeof 却给了它专属返回值。
 
 </v-click>
 
@@ -289,28 +290,24 @@ layout: center
 
 # typeof 测验
 
-<div class="text-left inline-block text-lg">
+<div class="text-left inline-block">
 
-以下表达式的结果是什么？
-
-<v-clicks>
-
-1. `typeof void 0` &nbsp;&nbsp; → &nbsp;&nbsp; **"undefined"** &nbsp; void 运算符总是返回 undefined
-2. `typeof (() => {})` &nbsp;&nbsp; → &nbsp;&nbsp; **"function"** &nbsp; 箭头函数也是函数
-3. `typeof class C {}` &nbsp;&nbsp; → &nbsp;&nbsp; **"function"** &nbsp; class 是函数的语法糖
-4. `typeof 42n` &nbsp;&nbsp; → &nbsp;&nbsp; **"bigint"** &nbsp; ES2020 第八种类型
-5. `typeof Symbol.iterator` &nbsp;&nbsp; → &nbsp;&nbsp; **"symbol"**
-6. `typeof null` &nbsp;&nbsp; → &nbsp;&nbsp; **"object"** &nbsp; 经典 bug
-7. `typeof typeof 42` &nbsp;&nbsp; → &nbsp;&nbsp; **"string"** &nbsp; typeof 总是返回字符串
-8. `typeof NaN` &nbsp;&nbsp; → &nbsp;&nbsp; **"number"** &nbsp; "不是数字"的数字
-
-</v-clicks>
+| 表达式 | 结果 |
+|--------|------|
+| `typeof void 0` | <v-click>**"undefined"** void 总返回 undefined</v-click> |
+| `typeof (() => {})` | <v-click>**"function"** 箭头函数也是函数</v-click> |
+| `typeof class C {}` | <v-click>**"function"** class 是语法糖</v-click> |
+| `typeof 42n` | <v-click>**"bigint"** ES2020</v-click> |
+| `typeof Symbol.iterator` | <v-click>**"symbol"**</v-click> |
+| `typeof null` | <v-click>**"object"** 经典 bug</v-click> |
+| `typeof typeof 42` | <v-click>**"string"** typeof 总返回字符串</v-click> |
+| `typeof NaN` | <v-click>**"number"** "不是数字"的数字</v-click> |
 
 </div>
 
 <v-click>
 
-<div class="mt-6 text-sm opacity-60">
+<div class="mt-4 text-sm opacity-60">
 
 关键记忆：typeof 总是返回一个**字符串**，所以 typeof typeof anything 恒等于 "string"
 
@@ -838,20 +835,18 @@ layout: center
 
 # 第二章测验
 
-<div class="text-left inline-block text-lg">
+<div class="text-left inline-block text-sm">
 
-<v-clicks>
-
-1. `[,,,].length` &nbsp;&nbsp; → &nbsp;&nbsp; **3** &nbsp; 末尾逗号不算，三个空槽
-2. `"abc"[1] = "B"; "abc"[1]` &nbsp;&nbsp; → &nbsp;&nbsp; **"b"** &nbsp; 字符串不可变
-3. `0.1 + 0.2 > 0.3` &nbsp;&nbsp; → &nbsp;&nbsp; **true** &nbsp; 0.30000...4 > 0.3
-4. `Number.isNaN("NaN")` &nbsp;&nbsp; → &nbsp;&nbsp; **false** &nbsp; 字符串不是 NaN
-5. `Object.is(-0, 0)` &nbsp;&nbsp; → &nbsp;&nbsp; **false** &nbsp; Object.is 能区分
-6. `var a=[1,2]; var b=a; b=[3,4]; a` &nbsp;&nbsp; → &nbsp;&nbsp; **[1,2]** &nbsp; b 重新赋值不影响 a
-7. `Number(null) + Number(undefined)` &nbsp;&nbsp; → &nbsp;&nbsp; **NaN** &nbsp; 0 + NaN = NaN
-8. `9007199254740992 === 9007199254740993` &nbsp;&nbsp; → &nbsp;&nbsp; **true** &nbsp; 超出安全整数范围
-
-</v-clicks>
+| 表达式 | 结果 |
+|--------|------|
+| `[,,,].length` | <v-click>**3** 末尾逗号不算</v-click> |
+| `"abc"[1] = "B"; "abc"[1]` | <v-click>**"b"** 字符串不可变</v-click> |
+| `0.1 + 0.2 > 0.3` | <v-click>**true**</v-click> |
+| `Number.isNaN("NaN")` | <v-click>**false** 字符串不是 NaN</v-click> |
+| `Object.is(-0, 0)` | <v-click>**false**</v-click> |
+| `var a=[1,2]; var b=a; b=[3,4]; a` | <v-click>**[1,2]** 重新赋值不影响</v-click> |
+| `Number(null) + Number(undefined)` | <v-click>**NaN** 0 + NaN</v-click> |
+| `9007199254740992 === 9007199254740993` | <v-click>**true** 超安全范围</v-click> |
 
 </div>
 
@@ -1126,17 +1121,15 @@ layoutClass: gap-4
 
 <div class="text-xs">
 
-<v-clicks>
-
-1. `typeof new String("abc")` → **"object"** 包装对象
-2. `new Boolean(false) == false` → **true** == 会拆封
-3. `new Boolean(false) === false` → **false** 类型不同
-4. `Array(1,2,3).length` → **3** 多参数时是元素
-5. `Array(3).length` → **3** 单数字参数是长度
-6. `Object.prototype.toString.call(null)` → **"[object Null]"**
-7. `typeof Symbol("x")` → **"symbol"**
-
-</v-clicks>
+| 表达式 | 结果 |
+|--------|------|
+| `typeof new String("abc")` | <v-click>**"object"** 包装对象</v-click> |
+| `new Boolean(false) == false` | <v-click>**true** == 会拆封</v-click> |
+| `new Boolean(false) === false` | <v-click>**false** 类型不同</v-click> |
+| `Array(1,2,3).length` | <v-click>**3** 多参数是元素</v-click> |
+| `Array(3).length` | <v-click>**3** 单数字是长度</v-click> |
+| `Object.prototype.toString.call(null)` | <v-click>**"[object Null]"**</v-click> |
+| `typeof Symbol("x")` | <v-click>**"symbol"**</v-click> |
 
 </div>
 
@@ -1169,38 +1162,20 @@ layout: default
 <div class="mt-2">
 
 ```mermaid
-graph LR
-    subgraph 第一章 类型
-    A1[七种内置类型] --> A2[typeof 运算符]
-    A2 --> A3[typeof null bug]
-    A2 --> A4[typeof 安全防护]
-    A1 --> A5[undefined vs undeclared]
-    end
-
-    subgraph 第二章 值
-    B1[数组] --> B2[稀疏数组]
-    B3[字符串] --> B4[不可变性]
-    B5[数字 IEEE 754] --> B6[浮点精度]
-    B5 --> B7[安全整数 / BigInt]
-    B8[特殊值] --> B9[NaN / -0 / null / undefined]
-    B10[值传递] --> B11[值复制 vs 引用复制]
-    end
-
-    subgraph 第三章 原生函数
-    C1[包装对象] --> C2[自动装箱/拆封]
-    C1 --> C3[Boolean 陷阱]
-    C4[构造函数] --> C5[Array 稀疏陷阱]
-    C6[工具类型] --> C7[Date / Error / Symbol]
-    end
-
-    A1 -.->|值的类型决定| B10
-    A2 -.->|typeof 检测| C2
-    B8 -.->|NaN/null 检测| A2
-    C2 -.->|原始值自动装箱| A1
-
-    style A1 fill:#e3f2fd
-    style B5 fill:#fff3e0
-    style C1 fill:#f3e5f5
+mindmap
+  root((类型和语法))
+    第一章 类型
+      八种内置类型
+      typeof / null bug / 安全防护
+      undefined vs undeclared
+    第二章 值
+      数组 / 字符串 / 不可变性
+      IEEE 754 / 浮点精度 / BigInt
+      NaN / -0 / Object.is
+      值复制 vs 引用复制
+    第三章 原生函数
+      装箱拆封 / Boolean 陷阱
+      Array / Date / Error / Symbol
 ```
 
 </div>
@@ -1312,9 +1287,3 @@ Q & A
 <span class="text-sm opacity-50">按 ESC 退出演示模式</span>
 
 </div>
-
-<style>
-#slidev-goto-dialog {
-  overflow: hidden;
-}
-</style>
