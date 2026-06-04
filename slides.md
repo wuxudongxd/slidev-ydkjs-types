@@ -1093,8 +1093,8 @@ mindmap
       Error 调用栈
       Symbol 不能 new
     内部属性
-      [[Class]] / toString.call
-      Symbol.toStringTag
+      Class / toString.call
+      toStringTag
 ```
 
 ---
