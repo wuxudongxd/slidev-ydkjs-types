@@ -277,12 +277,12 @@ function isNode() {
 </div>
 
 ---
-layout: center
+layout: default
 ---
 
 # typeof 测验
 
-<div class="text-left inline-block">
+<div class="text-sm">
 
 | 表达式 | 结果 |
 |--------|------|
@@ -416,8 +416,8 @@ a.toUpperCase(); // "FOO"  a; // 仍是 "foo"
 **借用数组方法：**
 
 ```javascript {monaco}
-Array.prototype.join.call("foo", "-"); // "f-o-o"
-Array.prototype.map.call("foo", c => c.toUpperCase()).join(""); // "FOO"
+[].join.call("foo", "-"); // "f-o-o"
+[].map.call("foo", c => c.toUpperCase()).join(""); // "FOO"
 ```
 
 </v-click>
