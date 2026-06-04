@@ -12,7 +12,6 @@ drawings:
 transition: slide-left
 title: 类型和语法
 mdc: true
-navigator: false
 ---
 
 # 类型和语法
@@ -1716,3 +1715,9 @@ Q & A
 <span class="text-sm opacity-50">按 ESC 退出演示模式</span>
 
 </div>
+
+<style>
+#slidev-goto-dialog {
+  overflow: hidden;
+}
+</style>
