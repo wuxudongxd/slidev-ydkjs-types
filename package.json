@@ -1,0 +1,28 @@
+{
+  "name": "slidev-ydkjs-types",
+  "version": "1.0.0",
+  "description": "《你不知道的JavaScript（中卷）》第一部分 1-3章 - 类型和语法",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "slidev --open",
+    "build": "slidev build",
+    "export": "slidev export"
+  },
+  "keywords": [
+    "slidev",
+    "javascript",
+    "types",
+    "presentation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@slidev/cli": "52.11.1",
+    "@slidev/theme-seriph": "latest",
+    "vue": "^3.5.26"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}
