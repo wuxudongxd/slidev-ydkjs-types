@@ -160,49 +160,28 @@ layout: default
 
 # typeof null — 历史真相
 
-<v-clicks>
+<div class="text-sm">
 
-<div class="text-xl mt-4">
+<v-clicks>
 
 **这是 JavaScript 最著名的 bug，从第一版就存在，可能永远不会被修复。**
 
-</div>
+**类型标签机制 (Type Tag)：** 最初实现中，值以 32 位存储，低 1-3 bits 为类型标签：
 
-<div class="mt-6">
-
-**V8 类型标签机制 (Type Tag)：**
-
-在 JavaScript 最初的实现中，值以 32 位为单位存储，包含一个小型的**类型标签 (1-3 bits)** 和值的实际数据。
-
-| 类型标签 | 类型 |
-|---------|------|
-| `000` | object |
-| `1` | int (31位整数) |
-| `010` | double |
-| `100` | string |
-| `110` | boolean |
+`000` → object | `1` → int | `010` → double | `100` → string | `110` → boolean
 
 `null` 的机器码是空指针 `0x00`，类型标签也是 `000` — 和 object 一模一样！
-
-</div>
-
-</v-clicks>
-
-<v-click>
-
-<div class="mt-6">
 
 ```javascript {monaco}
 // 安全判断 null 的模式
 var a = null;
 (!a && typeof a === "object"); // true — 唯一的 falsy object
-
-// 曾有 TC39 提案修复这个 bug，但因为会破坏太多现有代码而被否决
+// 曾有 TC39 提案修复，但因会破坏太多现有代码而被否决
 ```
 
-</div>
+</v-clicks>
 
-</v-click>
+</div>
 
 ---
 layout: two-cols
@@ -219,23 +198,16 @@ layoutClass: gap-4
 var a;
 typeof a; // "undefined"
 a;        // undefined (可以访问)
-
-var b = undefined;
-typeof b; // "undefined"
-
-// undefined 是一个值！
-// 类型为 undefined 的只有 undefined 这一个值
+// undefined 是一个值！类型为 undefined 的只有它一个值
 ```
 
 <v-click>
 
-<div class="mt-4 p-3 bg-yellow-500 bg-opacity-10 rounded">
+<div class="mt-2 p-2 bg-yellow-500 bg-opacity-10 rounded">
 
-**注意：** `undefined` 和 "没有定义" 不是一回事！
+**注意：** `undefined` ≠ "没有定义"
 - `undefined` = 已声明，无值
 - undeclared = 从未声明
-
-JavaScript 不幸地将两者搅在了一起。
 
 </div>
 
@@ -245,34 +217,29 @@ JavaScript 不幸地将两者搅在了一起。
 
 ::right::
 
+<div class="text-sm">
+
 **undeclared：** 变量从未声明
 
 ```javascript {monaco}
 // b 从未用 var/let/const 声明
 b; // ReferenceError: b is not defined
-
-// ⚠️ 错误信息有误导性！
-// "b is not defined" 容易让人以为是 undefined
-// 实际上应该是 "b is not declared"
+// ⚠️ "not defined" 有误导性，应该叫 "not declared"
 ```
 
 <v-click>
-
-<div class="mt-6">
 
 **typeof 的安全防护：**
 
 ```javascript {monaco}
 // typeof 对 undeclared 变量不会报错！
 typeof b; // "undefined" ← 不是 ReferenceError
-
-// 这个"bug"反而是一个有用的安全机制
-// 可以用来检测变量是否存在
+// 这个"bug"反而是有用的安全机制
 ```
 
-</div>
-
 </v-click>
+
+</div>
 
 ---
 layout: default
@@ -280,62 +247,41 @@ layout: default
 
 # typeof 安全防护 — 实战场景
 
-<v-clicks>
+<div class="text-sm">
 
-<div class="mt-4">
+<v-clicks>
 
 **场景一：DEBUG 模式检查**
 
 ```javascript {monaco}
-// 错误写法 — 如果 DEBUG 未声明会报错
-if (DEBUG) { console.log("调试模式"); }
-
-// 安全写法
-if (typeof DEBUG !== "undefined") {
-  console.log("调试模式");
-}
+if (DEBUG) { console.log("调试模式"); } // ❌ DEBUG 未声明会报错
+if (typeof DEBUG !== "undefined") { console.log("调试模式"); } // ✅
 ```
-
-</div>
-
-<div class="mt-4">
 
 **场景二：Polyfill 模式**
 
 ```javascript {monaco}
-// 安全地为缺失的 API 添加 polyfill
-if (typeof Promise === "undefined") {
-  // 加载 Promise polyfill
-}
+if (typeof Promise === "undefined") { /* 加载 polyfill */ }
 ```
 
-</div>
-
-<div class="mt-4">
-
-**场景三：SDK / 工具库 特性检测**
+**场景三：SDK 特性检测**
 
 ```javascript {monaco}
-// SDK 检测宿主环境
 function isNode() {
   return typeof process !== "undefined"
     && typeof process.versions?.node !== "undefined";
 }
 ```
 
-</div>
-
 </v-clicks>
 
 <v-click>
 
-<div class="mt-4 text-sm opacity-70">
-
 **ES2020 扩展：** `globalThis` 提供了跨环境访问全局对象的标准方式，部分替代了 typeof 防护的需求。
 
-</div>
-
 </v-click>
+
+</div>
 
 ---
 layout: center
@@ -430,65 +376,37 @@ layout: default
 
 # 数组
 
+<div class="text-sm">
+
 <v-clicks>
 
-<div class="mt-4">
-
-**JavaScript 数组可以容纳任何类型的值，而且不需要预先声明大小。**
-
-```javascript {monaco}
-var a = [1, "2", [3]];
-a.length; // 3
-a[2][0];  // 3
-```
-
-</div>
-
-<div class="mt-4">
+**JavaScript 数组可以容纳任何类型的值，不需要预先声明大小。**
 
 **陷阱一：稀疏数组 (Sparse Array)**
 
 ```javascript {monaco}
 var a = [];
 a[0] = 1;
-a[2] = 3;  // 跳过了 a[1]
+a[2] = 3;  // 跳过 a[1]
 a[1];      // undefined（但不是真正的 undefined 值！）
-a.length;  // 3
-
-// 稀疏数组的"空槽"和显式赋值 undefined 不同
-delete a[0];
-a;         // [empty, empty, 3] — 又多了一个空槽
+a.length;  // 3 — 空槽和显式 undefined 不同
 ```
-
-</div>
-
-<div class="mt-4">
 
 **陷阱二：字符串键名**
 
 ```javascript {monaco}
 var a = [];
-a["13"] = 42;  // ⚠️ 字符串 "13" 能被强制转换为数字
-a.length;      // 14！不是 1
-
+a["13"] = 42;       // ⚠️ "13" 被转换为数字索引
+a.length;           // 14！不是 1
 a["foobar"] = "baz";
-a.length;      // 14（非数字键不影响 length）
-a.foobar;      // "baz"
+a.length;           // 14（非数字键不影响 length）
 ```
-
-</div>
 
 </v-clicks>
 
-<v-click>
-
-<div class="mt-2 text-sm opacity-70">
-
-**建议：** 使用 `Array.from()` 或展开运算符处理类数组对象，避免手动操作稀疏数组。
+**建议：** 使用 `Array.from()` 或展开运算符处理类数组对象，避免稀疏数组。
 
 </div>
-
-</v-click>
 
 ---
 layout: two-cols
@@ -497,75 +415,49 @@ layoutClass: gap-4
 
 # 字符串
 
+<div class="text-sm">
+
 **字符串是不可变的 (Immutable)**
 
 ```javascript {monaco}
 var a = "foo";
-var b = ["f", "o", "o"];
-
 a[1] = "O";
-b[1] = "O";
-
-a; // "foo" — 没变！
-b; // ["f", "O", "o"] — 变了
-
-// 字符串的方法总是返回新字符串
-a.toUpperCase(); // "FOO"
-a;               // "foo" — 原值不变
+a; // "foo" — 没变！字符串方法总是返回新值
+a.toUpperCase(); // "FOO"  a; // 仍是 "foo"
 ```
 
 <v-click>
-
-<div class="mt-4">
 
 **借用数组方法：**
 
 ```javascript {monaco}
-var a = "foo";
-// 可以借用不修改原值的数组方法
-Array.prototype.join.call(a, "-");
-// "f-o-o"
-Array.prototype.map.call(
-  a,
-  (c) => c.toUpperCase()
-).join(""); // "FOO"
+Array.prototype.join.call("foo", "-"); // "f-o-o"
+Array.prototype.map.call("foo", c => c.toUpperCase()).join(""); // "FOO"
 ```
-
-</div>
 
 </v-click>
 
+</div>
+
 ::right::
 
-<div class="pt-4">
+<div class="text-sm pt-4">
 
 **字符串反转的陷阱**
 
 ```javascript {monaco}
-var a = "foo";
-
-// ❌ 经典"面试题"写法
-a.split("").reverse().join("");
-// "oof" — 看起来没问题？
-
-// ⚠️ 但遇到 Unicode 就翻车！
-var b = "manãna"; // "mañana"
-b.split("").reverse().join("");
-// "añanam" — 组合字符错位！
-
-// ✅ ES6 解决方案
-[...b].reverse().join("");
-// 正确处理大部分 Unicode
+"foo".split("").reverse().join(""); // "oof" — OK?
+// ⚠️ Unicode 会翻车！组合字符错位
+// ✅ ES6: [...str].reverse().join("")
 ```
 
 <v-click>
 
-<div class="mt-6 p-3 bg-blue-500 bg-opacity-10 rounded">
+<div class="mt-4 p-3 bg-blue-500 bg-opacity-10 rounded">
 
 **核心区别：**
 - 字符串 — 不可变，类数组但不是数组
 - 数组 — 可变，方法会修改原数组
-- 永远不要假设字符串方法等同于数组方法
 
 </div>
 
@@ -579,27 +471,11 @@ layout: default
 
 # IEEE 754 与数字语法
 
+<div class="text-sm">
+
 <v-clicks>
 
-<div class="mt-4">
-
-**JavaScript 的 number 类型基于 IEEE 754 标准，使用"双精度"64 位格式。**
-
-</div>
-
-<div class="mt-4">
-
-```
- 1 bit    11 bits              52 bits
-┌─────┬──────────┬────────────────────────────────────┐
-│ 符号 │   指数   │              尾数 (Mantissa)          │
-└─────┴──────────┴────────────────────────────────────┘
-  ±      范围        精度 → 这就是为什么有浮点误差
-```
-
-</div>
-
-<div class="mt-4">
+**JavaScript 的 number 基于 IEEE 754 "双精度"64 位格式：** 1bit 符号 + 11bits 指数 + 52bits 尾数
 
 **有趣的数字语法：**
 
@@ -608,23 +484,14 @@ layout: default
 42.toFixed(3);  // SyntaxError — 引擎把 . 当成小数点
 42..toFixed(3); // "42.000" — 第一个.是小数点，第二个.是属性访问
 (42).toFixed(3); // "42.000"
-0.42.toFixed(3); // "0.420"
-
-// 其他进制
-0xf3;  // 243（十六进制）
-0o363; // 243（ES6 八进制）
-0b11110011; // 243（ES6 二进制）
+// 其他进制：0xf3 (hex) / 0o363 (octal) / 0b11110011 (binary) → 243
 ```
 
-</div>
-
-<div class="mt-4 text-sm opacity-70">
-
-**注意：** JavaScript 没有"整数"类型。`42` 和 `42.0` 完全相同。所有数字都是浮点数。
-
-</div>
+**注意：** JavaScript 没有"整数"类型。`42` 和 `42.0` 完全相同，所有数字都是浮点数。
 
 </v-clicks>
+
+</div>
 
 ---
 layout: center
@@ -632,50 +499,36 @@ layout: center
 
 # 0.1 + 0.2 !== 0.3
 
-<div class="mt-8">
+<div class="mt-4">
 
 ```javascript {monaco}
-// 最经典的 JavaScript 面试题
 0.1 + 0.2 === 0.3; // false!
-
 0.1 + 0.2; // 0.30000000000000004
-
-// 为什么？因为 0.1 和 0.2 在二进制浮点中都是无限循环小数
-// 就像十进制中 1/3 = 0.3333... 一样
+// 因为 0.1 和 0.2 在二进制浮点中都是无限循环小数
 ```
 
 </div>
 
 <v-clicks>
 
-<div class="mt-8">
+<div class="mt-4">
 
 **解决方案：Number.EPSILON (ES6)**
 
 ```javascript {monaco}
-// 判断两个浮点数是否"足够接近"
 function numbersCloseEnoughToEqual(n1, n2) {
-  return Math.abs(n1 - n2) < Number.EPSILON;
+  return Math.abs(n1 - n2) < Number.EPSILON; // 2^-52
 }
-
 numbersCloseEnoughToEqual(0.1 + 0.2, 0.3); // true
-
-// Polyfill
-if (!Number.EPSILON) {
-  Number.EPSILON = Math.pow(2, -52); // 2.220446049250313e-16
-}
 ```
 
 </div>
 
-<div class="mt-8 p-4 bg-red-500 bg-opacity-10 rounded text-lg">
+<div class="mt-4 p-3 bg-red-500 bg-opacity-10 rounded">
 
 **业务实践：金额计算永远使用整数（分）！**
-
-```javascript
-// ❌ price = 19.9; total = price * 3; → 59.699999...
-// ✅ priceInCents = 1990; total = priceInCents * 3; → 5970 → 59.70
-```
+`❌ price = 19.9; total = price * 3; → 59.699999...`
+`✅ priceInCents = 1990; total = priceInCents * 3; → 5970 → 59.70`
 
 </div>
 
@@ -687,51 +540,35 @@ layout: default
 
 # 安全整数范围
 
+<div class="text-sm">
+
 <v-clicks>
 
-<div class="mt-4">
-
-**Number.MAX_SAFE_INTEGER 与 Number.MIN_SAFE_INTEGER**
+**Number.MAX_SAFE_INTEGER = 2^53 - 1 = 9007199254740991**
 
 ```javascript {monaco}
-Number.MAX_SAFE_INTEGER; // 9007199254740991 (2^53 - 1)
-Number.MIN_SAFE_INTEGER; // -9007199254740991
-
-// 超出安全范围会发生什么？
 9007199254740991 + 1; // 9007199254740992 ✅
 9007199254740991 + 2; // 9007199254740992 ❌ 精度丢失！
-
-Number.isSafeInteger(9007199254740991);     // true
 Number.isSafeInteger(9007199254740991 + 1); // false
 ```
-
-</div>
-
-<div class="mt-4">
 
 **ES2020 BigInt — 任意精度整数**
 
 ```javascript {monaco}
-const big = 9007199254740991n + 2n;
-big; // 9007199254740993n ✅ 精确！
-
+const big = 9007199254740991n + 2n; // 9007199254740993n ✅
 typeof big; // "bigint" — 第八种类型
-
-// 注意：BigInt 不能和 Number 混合运算
-// 1n + 1; // TypeError!
-1n + BigInt(1); // 2n ✅
+// BigInt 不能和 Number 混合运算：1n + BigInt(1) → 2n ✅
 ```
 
-</div>
+<div class="mt-2 p-2 bg-yellow-500 bg-opacity-10 rounded">
 
-<div class="mt-4 p-3 bg-yellow-500 bg-opacity-10 rounded">
-
-**业务场景：** 后端返回的大 ID（如订单号、雪花ID）超过 2^53 时，JSON.parse 会丢失精度。
-解决方案：让后端以字符串形式返回，或使用 `json-bigint` 库。
+**业务场景：** 后端大 ID（雪花ID）超 2^53 时，JSON.parse 丢精度。解决：让后端返回字符串，或用 `json-bigint` 库。
 
 </div>
 
 </v-clicks>
+
+</div>
 
 ---
 layout: two-cols
@@ -740,74 +577,57 @@ layoutClass: gap-4
 
 # null vs undefined
 
-<v-click>
+<div class="text-sm">
 
-<div class="mt-2">
+<v-click>
 
 | | `null` | `undefined` |
 |---|---|---|
 | 含义 | 曾赋过值，当前为空 | 从未赋值 |
 | typeof | `"object"` (bug) | `"undefined"` |
-| 场景 | 主动置空 | 缺省值/未初始化 |
-| 转数字 | `Number(null) → 0` | `Number(undefined) → NaN` |
-
-</div>
+| 转数字 | `0` | `NaN` |
 
 </v-click>
 
 <v-click>
 
 ```javascript {monaco}
-// null 表示"空值"
 var a = null; // 主动赋值为空
-
-// undefined 表示"缺失值"
-var b; // 声明但未赋值
+var b;        // 声明但未赋值 → undefined
 function foo(x) { return x; }
-foo(); // undefined — 参数缺失
+foo();        // undefined — 参数缺失
 ```
 
 </v-click>
 
+</div>
+
 ::right::
+
+<div class="text-sm">
 
 <v-click>
 
 **void 运算符**
 
 ```javascript {monaco}
-// void 运算符让任何表达式返回 undefined
-void 0;       // undefined
-void "hello"; // undefined
-void true;    // undefined
-
-// 为什么用 void 0 而不直接写 undefined？
-// 因为在 ES5 之前 undefined 可以被重写！
-var undefined = 42; // 非严格模式下合法！
+void 0; // undefined — 比 undefined 安全
+// ES5 前 undefined 可被重写！
+// var undefined = 42; // 非严格模式下合法
 ```
 
 </v-click>
 
 <v-click>
 
-<div class="mt-6">
-
-```javascript {monaco}
-// void 的实际用途
-// 1. 确保得到纯正的 undefined
-void 0 // 比 undefined 安全
-
-// 2. 阻止表达式返回值
-// <a href="javascript:void(0)">
-
-// 3. 箭头函数副作用
-button.onclick = () => void doSomething();
-// 确保返回 undefined 而非 doSomething 的返回值
-```
-
-</div>
+**void 的实际用途：**
+- 确保纯正 undefined：`void 0`
+- 阻止返回值：`<a href="javascript:void(0)">`
+- 箭头函数副作用：`() => void doSomething()`
 
 </v-click>
+
+</div>
 
 ---
 layout: default
@@ -815,58 +635,34 @@ layout: default
 
 # NaN — "不是数字"的数字
 
+<div class="text-sm">
+
 <v-clicks>
 
-<div class="mt-4">
-
 ```javascript {monaco}
-// NaN 意为 "Not a Number"，但它的类型是... number！
-typeof NaN; // "number" — 讽刺吧？
-
-// 更准确的理解：NaN 是"无效数值"(invalid number)
+typeof NaN; // "number" — 讽刺吧？更准确的理解：NaN 是"无效数值"
 var a = 2 / "foo"; // NaN
 ```
 
-</div>
-
-<div class="mt-4">
-
-**NaN 的独特性质 — 不等于自身**
+**NaN 不等于自身 — JavaScript 中唯一！**
 
 ```javascript {monaco}
-NaN === NaN; // false — JavaScript 中唯一不等于自身的值！
-NaN !== NaN; // true
-
-var a = 2 / "foo";
-a === NaN; // false — 无法用 === 检测 NaN
+NaN === NaN; // false
+a === NaN;   // false — 无法用 === 检测 NaN
 ```
-
-</div>
-
-<div class="mt-4">
 
 **isNaN() 的 bug 与 Number.isNaN() 的修复**
 
 ```javascript {monaco}
-// ❌ 全局 isNaN() 有 bug — 它检测的是"不是数字"，而非"是 NaN"
-isNaN("foo");    // true — 字符串不是数字，但也不是 NaN！
-isNaN(undefined);// true — undefined 也中招
-
-// ✅ ES6 的 Number.isNaN() — 严格检测 NaN
-Number.isNaN("foo");     // false ✅
-Number.isNaN(undefined); // false ✅
-Number.isNaN(NaN);       // true ✅
-Number.isNaN(2 / "foo"); // true ✅
-
-// Polyfill（利用 NaN 不等于自身的特性）
-if (!Number.isNaN) {
-  Number.isNaN = function(n) { return n !== n; };
-}
+isNaN("foo");        // true ❌ 字符串不是 NaN！
+Number.isNaN("foo"); // false ✅
+Number.isNaN(NaN);   // true ✅
+// Polyfill: Number.isNaN = n => n !== n;
 ```
 
-</div>
-
 </v-clicks>
+
+</div>
 
 ---
 layout: default
@@ -874,49 +670,33 @@ layout: default
 
 # -0 与 Object.is()
 
-<v-clicks>
+<div class="text-sm">
 
-<div class="mt-4">
+<v-clicks>
 
 **负零：一个被隐藏的值**
 
 ```javascript {monaco}
-var a = 0 / -3; // -0（不是 0！）
-var b = 0 * -3; // -0
-
-// 但 JavaScript 试图隐藏它的存在
-a === 0;     // true ← 说谎了！
-a === -0;    // true
--0 === 0;    // true
-a.toString(); // "0" ← 又说谎了！
-JSON.stringify(-0); // "0" ← 还在说谎
-JSON.parse("-0");   // -0 ← 这个倒是诚实的
+var a = 0 / -3; // -0
+-0 === 0;       // true ← 说谎了！
+(-0).toString(); // "0" ← 又说谎
+JSON.stringify(-0); // "0"  JSON.parse("-0"); // -0 ← 诚实的
 ```
 
-</div>
+**为什么需要 -0？** 表示"方向"的场景（动画速度、坐标轴），符号位携带重要信息。
 
-<div class="mt-4">
-
-**为什么需要 -0？** 在某些需要表示"方向"的场景中（如动画速度、坐标轴方向），符号位携带了重要信息。
-
-</div>
-
-<div class="mt-4">
-
-**Object.is() — ES6 的终极比较 (SameValue)**
+**Object.is() — ES6 终极比较 (SameValue)**
 
 ```javascript {monaco}
-// Object.is() 同时解决了 NaN 和 -0 的比较问题
-Object.is(NaN, NaN);   // true ✅（=== 返回 false）
-Object.is(-0, 0);      // false ✅（=== 返回 true）
-Object.is(42, 42);     // true（正常情况和 === 一致）
-
+Object.is(NaN, NaN); // true ✅（=== 返回 false）
+Object.is(-0, 0);    // false ✅（=== 返回 true）
+Object.is(42, 42);   // true（正常情况和 === 一致）
 // 性能提示：Object.is() 比 === 慢，只在需要区分 NaN/-0 时使用
 ```
 
-</div>
-
 </v-clicks>
+
+</div>
 
 ---
 layout: two-cols
@@ -925,31 +705,28 @@ layoutClass: gap-4
 
 # 值复制 vs 引用复制
 
-**原始类型 — 值复制 (Copy by Value)**
+<div class="text-sm">
+
+**原始类型 — 值复制**
 
 ```javascript {monaco}
-var a = 2;
-var b = a; // b 是 a 的值的副本
-b++;
-a; // 2 — a 不受影响
-b; // 3
+var a = 2; var b = a; b++; a; // 2 — 不受影响
 ```
 
-**对象类型 — 引用复制 (Copy by Reference)**
+**对象类型 — 引用复制**
 
 ```javascript {monaco}
-var a = [1, 2, 3];
-var b = a; // b 不是副本，是同一个引用！
-b.push(4);
-a; // [1, 2, 3, 4] — a 也变了！
-b; // [1, 2, 3, 4]
+var a = [1,2,3]; var b = a; b.push(4);
+a; // [1,2,3,4] — a 也变了！同一个引用
 ```
+
+</div>
 
 <v-click>
 
-<div class="mt-2 text-sm">
+<div class="text-sm mt-2">
 
-**注意：** JavaScript 没有"指针"的概念。引用指向的是**值本身**，而不是变量。
+**注意：** 引用指向**值本身**，不是变量。没有"指针"概念。
 
 </div>
 
@@ -957,20 +734,16 @@ b; // [1, 2, 3, 4]
 
 ::right::
 
-<div class="pt-4">
-
 ```mermaid
 graph TD
     subgraph 值复制
     A1[变量 a] -->|值: 2| V1[2]
     B1[变量 b] -->|值: 3| V2[3]
     end
-
     subgraph 引用复制
     A2[变量 a] --> R1["[1,2,3,4]"]
     B2[变量 b] --> R1
     end
-
     style V1 fill:#c8e6c9
     style V2 fill:#c8e6c9
     style R1 fill:#ffecb3
@@ -978,18 +751,13 @@ graph TD
 
 <v-click>
 
-<div class="mt-4">
+<div class="text-sm mt-2">
 
-**关键规则：**
-- `null`、`undefined`、`string`、`number`、`boolean`、`symbol` → **值复制**
-- `object`（含数组、函数）→ **引用复制**
-- 没有语法可以控制复制方式，完全由值的类型决定
+**规则：** 原始类型(`null`/`undefined`/`string`/`number`/`boolean`/`symbol`) → 值复制；`object`(含数组、函数) → 引用复制。由值的类型决定。
 
 </div>
 
 </v-click>
-
-</div>
 
 ---
 layout: default
@@ -997,57 +765,36 @@ layout: default
 
 # 函数参数的引用误区
 
-<v-clicks>
+<div class="text-sm">
 
-<div class="mt-4 text-lg">
+<v-clicks>
 
 **函数参数传递的是引用的副本，不是引用本身。**
 
-</div>
-
-<div class="mt-4">
-
 ```javascript {monaco}
 function foo(x) {
-  x.push(4);
-  x; // [1, 2, 3, 4] — 通过引用修改了原数组
-
-  x = [4, 5, 6]; // ⚠️ 这里创建了一个新引用！
-  x.push(7);
-  x; // [4, 5, 6, 7] — 新数组
+  x.push(4);     // 通过引用修改了原数组
+  x = [4, 5, 6]; // ⚠️ 创建了新引用！
+  x.push(7);     // 修改的是新数组
 }
-
 var a = [1, 2, 3];
 foo(a);
 a; // [1, 2, 3, 4] — 不是 [4, 5, 6, 7]！
 ```
 
-</div>
-
-<div class="mt-4">
-
-**为什么？**
+**图解：**
 
 ```
-调用前：    a ──→ [1,2,3]
-           x ──→ [1,2,3]  （x 是引用的副本，指向同一个数组）
-
-x.push(4)：a ──→ [1,2,3,4]
-           x ──→ [1,2,3,4]  （修改的是同一个数组 ✅）
-
-x=[4,5,6]：a ──→ [1,2,3,4]  （a 还是指向原来的数组）
-           x ──→ [4,5,6]    （x 指向了新数组，和 a 无关了 ❌）
+调用前：  a ──→ [1,2,3]    x ──→ [1,2,3] （同一个数组）
+push(4)：a ──→ [1,2,3,4]  x ──→ [1,2,3,4] ✅
+x=[4,5,6]：a ──→ [1,2,3,4]  x ──→ [4,5,6] ❌ 分离了
 ```
 
-</div>
-
-<div class="mt-4 text-sm opacity-70">
-
-**结论：** 重新赋值 ≠ 修改。`x.push()` 修改了引用指向的值；`x = [...]` 改变了 x 本身的指向。
-
-</div>
+**结论：** 重新赋值 ≠ 修改。`x.push()` 修改引用指向的值；`x = [...]` 改变 x 本身的指向。
 
 </v-clicks>
+
+</div>
 
 ---
 layout: default
@@ -1055,53 +802,35 @@ layout: default
 
 # 业务实践：不可变数据
 
+<div class="text-sm">
+
 <v-clicks>
 
-<div class="mt-4">
-
-**一个经典的 Redux bug：**
+**经典 Redux bug：**
 
 ```javascript {monaco}
-// ❌ 直接修改了 state，Redux 检测不到变化
+// ❌ 直接修改 state，Redux 检测不到变化
 function reducer(state, action) {
-  if (action.type === 'ADD_ITEM') {
-    state.items.push(action.payload); // 突变！
-    return state; // 同一个引用，React 不会重新渲染
-  }
-  return state;
+  state.items.push(action.payload); // 突变！
+  return state; // 同一个引用，React 不会重渲染
 }
-
 // ✅ 创建新引用
 function reducer(state, action) {
-  if (action.type === 'ADD_ITEM') {
-    return {
-      ...state,
-      items: [...state.items, action.payload] // 新数组
-    };
-  }
-  return state;
+  return { ...state, items: [...state.items, action.payload] };
 }
 ```
-
-</div>
-
-<div class="mt-4">
 
 **ES2024: structuredClone — 原生深拷贝**
 
 ```javascript {monaco}
-const original = { a: 1, b: { c: 2 }, d: new Date() };
-const clone = structuredClone(original);
-clone.b.c = 99;
-original.b.c; // 2 — 深拷贝，互不影响
-
-// 支持 Date, Map, Set, ArrayBuffer 等，但不支持函数和 DOM 节点
-// 替代了 JSON.parse(JSON.stringify(...)) 的笨方法
+const clone = structuredClone({ a: 1, b: { c: 2 }, d: new Date() });
+// 支持 Date/Map/Set/ArrayBuffer，不支持函数和 DOM 节点
+// 替代 JSON.parse(JSON.stringify(...)) 的笨方法
 ```
 
-</div>
-
 </v-clicks>
+
+</div>
 
 ---
 layout: center
@@ -1187,55 +916,29 @@ layout: default
 
 # 原生函数与 [[Class]]
 
+<div class="text-sm">
+
 <v-clicks>
 
-<div class="mt-4">
-
-**JavaScript 的内置原生函数（也叫内置函数）：**
-
-<div class="grid grid-cols-5 gap-2 mt-2 text-center text-sm">
-  <div class="p-2 bg-blue-500 bg-opacity-10 rounded">String()</div>
-  <div class="p-2 bg-blue-500 bg-opacity-10 rounded">Number()</div>
-  <div class="p-2 bg-blue-500 bg-opacity-10 rounded">Boolean()</div>
-  <div class="p-2 bg-blue-500 bg-opacity-10 rounded">Array()</div>
-  <div class="p-2 bg-blue-500 bg-opacity-10 rounded">Object()</div>
-  <div class="p-2 bg-blue-500 bg-opacity-10 rounded">Function()</div>
-  <div class="p-2 bg-blue-500 bg-opacity-10 rounded">RegExp()</div>
-  <div class="p-2 bg-blue-500 bg-opacity-10 rounded">Date()</div>
-  <div class="p-2 bg-blue-500 bg-opacity-10 rounded">Error()</div>
-  <div class="p-2 bg-blue-500 bg-opacity-10 rounded">Symbol()</div>
-</div>
-
-</div>
-
-<div class="mt-4">
+**JavaScript 的内置原生函数：** `String()` `Number()` `Boolean()` `Array()` `Object()` `Function()` `RegExp()` `Date()` `Error()` `Symbol()`
 
 **内部 [[Class]] 属性 — 值的"身份证"**
 
 ```javascript {monaco}
-// 通过 Object.prototype.toString.call() 可以查看内部 [[Class]]
-Object.prototype.toString.call([1, 2, 3]);     // "[object Array]"
-Object.prototype.toString.call(/regex/i);      // "[object RegExp]"
-Object.prototype.toString.call(null);          // "[object Null]"
-Object.prototype.toString.call(undefined);     // "[object Undefined]"
-
+Object.prototype.toString.call([1,2,3]);   // "[object Array]"
+Object.prototype.toString.call(/regex/i);  // "[object RegExp]"
+Object.prototype.toString.call(null);      // "[object Null]"
+Object.prototype.toString.call(undefined); // "[object Undefined]"
 // 原始值会被自动"装箱"
-Object.prototype.toString.call("abc");         // "[object String]"
-Object.prototype.toString.call(42);            // "[object Number]"
-Object.prototype.toString.call(true);          // "[object Boolean]"
+Object.prototype.toString.call("abc");     // "[object String]"
+Object.prototype.toString.call(42);        // "[object Number]"
 ```
 
-</div>
-
-<div class="mt-4 text-sm opacity-70">
-
-**ES6 扩展：** `Symbol.toStringTag` 允许自定义对象的 `toString` 标签：
-`class MyClass { get [Symbol.toStringTag]() { return "MyClass"; } }`
-→ `Object.prototype.toString.call(new MyClass())` → `"[object MyClass]"`
-
-</div>
+**ES6 扩展：** `Symbol.toStringTag` 允许自定义 `toString` 标签。
 
 </v-clicks>
+
+</div>
 
 ---
 layout: default
@@ -1243,51 +946,37 @@ layout: default
 
 # 封装（装箱）与拆封
 
-<v-clicks>
+<div class="text-sm">
 
-<div class="mt-4">
+<v-clicks>
 
 **自动装箱 (Auto-Boxing)**
 
 ```javascript {monaco}
-// 原始值没有方法和属性，但你可以这样写：
-"abc".length;        // 3
+"abc".length;        // 3 — 原始值没有属性，引擎自动装箱
 "abc".toUpperCase(); // "ABC"
 (42).toFixed(2);     // "42.00"
-
-// JavaScript 引擎自动将原始值"装箱"为对应的包装对象
 // "abc" → new String("abc") → 调用方法 → 销毁包装对象
-// 这一切都是透明的
 ```
-
-</div>
-
-<div class="mt-4">
 
 **拆封 — valueOf()**
 
 ```javascript {monaco}
 var a = new String("abc");
-var b = new Number(42);
-var c = new Boolean(true);
-
-typeof a; // "object" — 不是 "string"！
-typeof b; // "object" — 不是 "number"！
-
+typeof a;    // "object" — 不是 "string"！
 a.valueOf(); // "abc" — 拆封得到原始值
-b.valueOf(); // 42
-c + "";      // "true" — 隐式拆封
+(new Boolean(true)) + ""; // "true" — 隐式拆封
 ```
 
-</div>
+<div class="mt-2 p-2 bg-green-500 bg-opacity-10 rounded">
 
-<div class="mt-4 p-3 bg-green-500 bg-opacity-10 rounded">
-
-**引擎优化提示：** 不要自己预先手动装箱（`new String("abc")`），引擎对原始值的优化远比包装对象好。让引擎自动装箱就好。
+**引擎优化提示：** 不要手动装箱（`new String("abc")`），引擎对原始值的优化远比包装对象好。
 
 </div>
 
 </v-clicks>
+
+</div>
 
 ---
 layout: center
@@ -1295,43 +984,31 @@ layout: center
 
 # Boolean 陷阱
 
-<div class="mt-8 text-4xl">
+<div class="mt-4 text-2xl">
 
 ```javascript {monaco}
 var a = new Boolean(false);
-
-if (a) {
-  console.log("这行会执行吗？");
-}
-// 会！因为 a 是一个对象，对象永远是真值！
+if (a) { console.log("这行会执行吗？"); }
+// 会！a 是对象，对象永远是真值！
 ```
 
 </div>
 
 <v-clicks>
 
-<div class="mt-8 text-xl">
+<div class="mt-4 text-lg">
 
-`new Boolean(false)` 创建的是一个**包装对象**，不是 `false` 本身。
-
-对象 → 真值 → `if` 判断为 `true` → 坑！
+`new Boolean(false)` 是**包装对象**，不是 `false`。对象 → 真值 → 坑！
 
 </div>
 
-<div class="mt-6 p-4 bg-red-500 bg-opacity-10 rounded">
-
-**业务翻车案例：**
+<div class="mt-4 p-3 bg-red-500 bg-opacity-10 rounded text-sm">
 
 ```javascript {monaco}
-// 后端返回 flag 字段，前端用 Boolean 构造函数"转换"
-var isActive = new Boolean(apiResponse.active); // ← 错！
-
-if (!isActive) {
-  showDeactivatedUI(); // 永远不会执行，即使 active 是 false
-}
-
-// ✅ 正确做法：用 Boolean() 函数（不带 new），或者 !!value
-var isActive = Boolean(apiResponse.active);
+// ❌ 后端返回 flag，用 Boolean 构造函数"转换"
+var isActive = new Boolean(apiResponse.active);
+if (!isActive) { showDeactivatedUI(); } // 永远不执行！
+// ✅ 正确：Boolean(value) 不带 new，或 !!value
 var isActive = !!apiResponse.active;
 ```
 
@@ -1345,52 +1022,31 @@ layout: default
 
 # Array 构造函数的陷阱
 
+<div class="text-sm">
+
 <v-clicks>
 
-<div class="mt-4">
-
 ```javascript {monaco}
-// Array() 和 new Array() 效果相同（有没有 new 都行）
-
-// 当只传一个数字参数时 — 它是长度，不是元素！
+// 只传一个数字参数时 — 它是长度，不是元素！
 var a = new Array(3);
-a.length; // 3
-a[0];     // undefined（但实际是空槽！）
-a;        // [empty × 3]
-
-// 这不是一个有三个 undefined 的数组！
-var b = [undefined, undefined, undefined];
-a.join("-");  // "--"    ← join 把空槽当 ""
-b.join("-");  // "--"    ← 看起来一样...
+a; // [empty × 3] — 不是 [undefined, undefined, undefined]！
 a.map((v, i) => i); // [empty × 3] ← map 跳过空槽！
-b.map((v, i) => i); // [0, 1, 2]   ← 正常遍历
+[undefined, undefined, undefined].map((v, i) => i); // [0, 1, 2]
 ```
-
-</div>
-
-<div class="mt-4">
 
 **安全创建数组的方式：**
 
 ```javascript {monaco}
-// ✅ 如果需要创建指定长度的数组并填充
-Array.from({ length: 3 });         // [undefined, undefined, undefined]
+Array.from({ length: 3 });              // [undefined, undefined, undefined]
 Array.from({ length: 3 }, (_, i) => i); // [0, 1, 2]
-Array(3).fill(0);                   // [0, 0, 0]
-[...Array(3)];                      // [undefined, undefined, undefined]
-
-// ❌ 永远不要依赖稀疏数组的行为
+Array(3).fill(0);                        // [0, 0, 0]
 ```
 
-</div>
-
-<div class="mt-4 text-sm opacity-70">
-
-**规则：** 永远不要创建和使用稀疏数组。如果需要指定长度，用 `Array.from()` 或 `Array(n).fill()`。
-
-</div>
+**规则：** 永远不要创建和使用稀疏数组。用 `Array.from()` 或 `Array(n).fill()`。
 
 </v-clicks>
+
+</div>
 
 ---
 layout: default
@@ -1398,58 +1054,35 @@ layout: default
 
 # Date / Error / Symbol
 
-<v-clicks>
+<div class="text-sm">
 
-<div class="mt-4">
+<v-clicks>
 
 **Date — 唯一没有字面量形式的原生类型**
 
 ```javascript {monaco}
-// 获取当前时间戳
-Date.now(); // 1717459200000 (推荐)
-+new Date(); // 同上，但不太清晰
-
-// 创建日期对象
-new Date("2026-06-04"); // Date 对象
-new Date(2026, 5, 4);   // 月份从 0 开始！5 = 六月
+Date.now(); // 1717459200000 (推荐获取时间戳)
+new Date(2026, 5, 4); // 月份从 0 开始！5 = 六月
 ```
-
-</div>
-
-<div class="mt-4">
 
 **Error — 自动捕获调用栈**
 
 ```javascript {monaco}
-function foo() {
-  throw new Error("something went wrong");
-  // Error 对象自动包含 stack 属性（调用栈信息）
-}
-
-// ES2022 扩展：Error.cause — 错误链
-try {
-  await fetch(url);
-} catch (err) {
-  throw new Error("Failed to fetch user data", { cause: err });
-  // 保留了原始错误信息，便于调试
-}
+throw new Error("something went wrong"); // 自动包含 stack
+// ES2022: Error.cause — 错误链
+throw new Error("Failed to fetch", { cause: originalErr });
 ```
-
-</div>
-
-<div class="mt-4">
 
 **Symbol — ES6 新增，不能用 new**
 
 ```javascript {monaco}
-var sym = Symbol("description"); // 不能用 new Symbol()！
-typeof sym; // "symbol"
-// 主要用于对象的唯一属性键和内置行为钩子（Symbol.iterator 等）
+var sym = Symbol("desc"); // 不能 new Symbol()！
+typeof sym; // "symbol" — 用于对象唯一属性键和内置钩子
 ```
 
-</div>
-
 </v-clicks>
+
+</div>
 
 ---
 layout: default
@@ -1457,54 +1090,32 @@ layout: default
 
 # 原生原型
 
-<v-clicks>
+<div class="text-sm">
 
-<div class="mt-4 text-lg">
+<v-clicks>
 
 **原生构造函数的 prototype 本身就是其类型的"空值"实例。**
 
-</div>
-
-<div class="mt-4">
-
 ```javascript {monaco}
-// 这些原型本身很有趣
-typeof Function.prototype; // "function" — 空函数
-Function.prototype();      // undefined（可以调用！）
-
+typeof Function.prototype; // "function" — 空函数，可以调用
 Array.prototype;           // [] — 空数组
 String.prototype;          // "" — 空字符串
-
 RegExp.prototype.toString(); // "/(?:)/" — 空正则
 ```
 
-</div>
-
-<div class="mt-4">
-
-**曾经有人建议用原型作为默认值：**
+**曾有人建议用原型作默认值（现在不推荐）：**
 
 ```javascript {monaco}
-// ❌ 不推荐！（书中提到的做法，现在不建议）
-function foo(arr = Array.prototype, fn = Function.prototype) {
-  // ...
-}
-
-// ✅ 现代写法：使用参数默认值
-function foo(arr = [], fn = () => {}) {
-  // ...
-}
+// ❌ function foo(arr = Array.prototype, fn = Function.prototype) {}
+// ✅ 现代写法：
+function foo(arr = [], fn = () => {}) {}
 ```
 
-</div>
-
-<div class="mt-4 p-3 bg-blue-500 bg-opacity-10 rounded text-sm">
-
-**要点：** 了解原生原型的特殊性有助于理解 JavaScript 的对象系统，但在实际代码中应使用字面量形式和现代语法。
-
-</div>
+**要点：** 了解原生原型有助于理解对象系统，但实际代码应使用字面量和现代语法。
 
 </v-clicks>
+
+</div>
 
 ---
 layout: two-cols
@@ -1513,11 +1124,11 @@ layoutClass: gap-4
 
 # 第三章测验
 
-<div class="text-sm">
+<div class="text-xs">
 
 <v-clicks>
 
-1. `typeof new String("abc")` → **"object"** 包装对象不是原始值
+1. `typeof new String("abc")` → **"object"** 包装对象
 2. `new Boolean(false) == false` → **true** == 会拆封
 3. `new Boolean(false) === false` → **false** 类型不同
 4. `Array(1,2,3).length` → **3** 多参数时是元素
@@ -1531,37 +1142,23 @@ layoutClass: gap-4
 
 ::right::
 
-<div class="pt-4">
-
 ```mermaid
 mindmap
   root((原生函数))
     包装类型
-      String
-      Number
-      Boolean
-      自动装箱
-      valueOf 拆封
+      String / Number / Boolean
+      自动装箱 / valueOf 拆封
     构造函数
       Array 稀疏陷阱
-      Object
-      Function
-      RegExp
+      Object / Function / RegExp
     工具类型
       Date 无字面量
       Error 调用栈
       Symbol 不能 new
-    原型特性
-      Function.prototype 是函数
-      Array.prototype 是空数组
-      用字面量替代原型默认值
     内部属性
-      [[Class]]
-      toString.call 检测
+      [[Class]] / toString.call
       Symbol.toStringTag
 ```
-
-</div>
 
 ---
 layout: default
@@ -1617,31 +1214,31 @@ class: text-center
 
 <v-clicks>
 
-<div class="text-2xl mt-8">
+<div class="text-xl mt-6">
 
 **1. 变量没有类型，值才有类型**
 
 </div>
 
-<div class="text-2xl mt-6">
+<div class="text-xl mt-4">
 
 **2. 金额计算永远用整数（分）**
 
 </div>
 
-<div class="text-2xl mt-6">
+<div class="text-xl mt-4">
 
 **3. 用 Number.isNaN() 而非 isNaN()**
 
 </div>
 
-<div class="text-2xl mt-6">
+<div class="text-xl mt-4">
 
 **4. 永远不要 new Boolean / String / Number**
 
 </div>
 
-<div class="text-2xl mt-6">
+<div class="text-xl mt-4">
 
 **5. 对象是引用传递，注意不可变模式**
 
@@ -1651,7 +1248,7 @@ class: text-center
 
 <v-click>
 
-<div class="mt-8 text-sm opacity-60">
+<div class="mt-6 text-sm opacity-60">
 
 记住这五条，你已经比大多数 JavaScript 开发者更了解类型了。
 
