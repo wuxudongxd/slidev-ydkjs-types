@@ -45,12 +45,12 @@ class: text-center
 
 | 表达式 | 结果 |
 |--------|------|
-| `typeof null === "object"` | <v-click>**true** ✅ null 底层标签与 object 相同</v-click> |
-| `0.1 + 0.2 === 0.3` | <v-click>**false** ❌ 二进制无限小数，有精度误差</v-click> |
-| `NaN === NaN` | <v-click>**false** ❌ NaN 不等于任何值包括自身</v-click> |
-| `typeof NaN === "number"` | <v-click>**true** ✅ NaN 仍属于数字类型</v-click> |
-| `-0 === 0` | <v-click>**true** ✅ === 和 toString 都把 -0 伪装成 0</v-click> |
-| `new Boolean(false) ? "truthy" : "falsy"` | <v-click>**"truthy"** 包装对象永远是真值</v-click> |
+| `typeof null === "object"` | <v-click>**true** ✅ V1 type tag 设计缺陷</v-click> |
+| `0.1 + 0.2 === 0.3` | <v-click>**false** ❌ IEEE 754 浮点无法精确表示</v-click> |
+| `NaN === NaN` | <v-click>**false** ❌ IEEE 754 规定 NaN ≠ 任何值</v-click> |
+| `typeof NaN === "number"` | <v-click>**true** ✅ NaN 是 number 类型的特殊值</v-click> |
+| `-0 === 0` | <v-click>**true** ✅ === 不区分正负零</v-click> |
+| `new Boolean(false) ? "truthy" : "falsy"` | <v-click>**"truthy"** 封装对象是 truthy</v-click> |
 
 </div>
 
@@ -357,7 +357,7 @@ layout: section
 
 <div class="text-2xl mt-4 opacity-80">
 
-数组、字符串、数字……处处都是坑
+数组、字符串、数字……常见误区与边界行为
 
 </div>
 
@@ -487,7 +487,7 @@ layout: center
 ```javascript {monaco}
 0.1 + 0.2 === 0.3; // false!
 0.1 + 0.2; // 0.30000000000000004
-// 0.1 和 0.2 在二进制中都是无限小数，截断后有误差
+// 0.1 和 0.2 无法用有限位二进制精确表示，存储时产生舍入误差
 ```
 
 </div>
@@ -617,7 +617,7 @@ layout: default
 <div class="text-sm">
 
 ```javascript {monaco}
-typeof NaN; // "number" — 讽刺吧？更准确的理解：NaN 是"无效数值"
+typeof NaN; // "number" — 看似矛盾，但 NaN 的含义是"无效数值"，仍属 number 类型
 var a = 2 / "foo"; // NaN
 ```
 
@@ -651,9 +651,9 @@ layout: default
 
 ```javascript {monaco}
 var a = 0 / -3; // -0
--0 === 0;       // true ← 说谎了！
-(-0).toString(); // "0" ← 又说谎
-JSON.stringify(-0); // "0"  JSON.parse("-0"); // -0 ← 诚实的
+-0 === 0;       // true ← 无法区分！
+(-0).toString(); // "0" ← 丢失符号
+JSON.stringify(-0); // "0"  JSON.parse("-0"); // -0 ← 保留了符号
 ```
 
 **为什么需要 -0？** 表示"方向"的场景（动画速度、坐标轴），符号位携带重要信息。
@@ -805,7 +805,7 @@ layout: center
 
 | 表达式 | 结果 |
 |--------|------|
-| `[,,,].length` | <v-click>**3** [,,,] 等价于 [empty, empty, empty,]，trailing comma 不额外计数</v-click> |
+| `[,,,].length` | <v-click>**3** trailing comma 不计入长度</v-click> |
 | `"abc"[1] = "B"; "abc"[1]` | <v-click>**"b"** 字符串不可变</v-click> |
 | `0.1 + 0.2 > 0.3` | <v-click>**true**</v-click> |
 | `Number.isNaN("NaN")` | <v-click>**false** 字符串不是 NaN</v-click> |
@@ -942,7 +942,7 @@ layout: center
 ```javascript {monaco}
 var a = new Boolean(false);
 if (a) { console.log("这行会执行吗？"); }
-// 会！a 是对象，对象永远是真值！
+// 会！a 是对象，对象永远是 truthy！
 ```
 
 </div>
@@ -951,7 +951,7 @@ if (a) { console.log("这行会执行吗？"); }
 
 <div class="mt-4 text-lg">
 
-`new Boolean(false)` 是**包装对象**，不是 `false`。对象 → 真值 → 坑！
+`new Boolean(false)` 是**包装对象**，不是 `false`。对象 → truthy → 条件判断失效！
 
 </div>
 
@@ -1071,7 +1071,7 @@ layoutClass: gap-4
 | 表达式 | 结果 |
 |--------|------|
 | `typeof new String("abc")` | <v-click>**"object"** 包装对象</v-click> |
-| `new Boolean(false) == false` | <v-click>**true** == 触发 ToPrimitive 调 valueOf() 得 false</v-click> |
+| `new Boolean(false) == false` | <v-click>**true** == 隐式转换后值相等</v-click> |
 | `new Boolean(false) === false` | <v-click>**false** 类型不同</v-click> |
 | `Array(1,2,3).length` | <v-click>**3** 多参数是元素</v-click> |
 | `Array(3).length` | <v-click>**3** 单数字是长度</v-click> |
@@ -1162,7 +1162,7 @@ class: text-center
 
 <div class="text-xl mt-4">
 
-**5. 对象是引用传递，注意不可变模式**
+**5. 对象按引用复制，注意不可变模式**
 
 </div>
 
