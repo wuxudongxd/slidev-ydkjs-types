@@ -1114,8 +1114,7 @@ layoutClass: gap-4
 | 表达式 | 结果 |
 |--------|------|
 | `typeof new String("abc")` | <v-click>**"object"** 包装对象</v-click> |
-| `new Boolean(false) == false` | <v-click>**true** == 隐式转换后值相等</v-click> |
-| `new Boolean(false) === false` | <v-click>**false** 类型不同</v-click> |
+| `new Boolean(0) ? 1 : 2` | <v-click>**1** 有 new → 对象，对象永远 truthy</v-click> |
 | `Array(1,2,3).length` | <v-click>**3** 多参数是元素</v-click> |
 | `Array(3).length` | <v-click>**3** 单数字是长度</v-click> |
 | `Object.prototype.toString.call(null)` | <v-click>**"[object Null]"**</v-click> |
@@ -1139,7 +1138,7 @@ mindmap
       Error 调用栈
       Symbol 不能 new
     内部属性
-      [[Class]] / toString.call
+      Class 内部标签
       toStringTag
 ```
 
