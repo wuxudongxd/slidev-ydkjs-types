@@ -45,12 +45,12 @@ class: text-center
 
 | 表达式 | 结果 |
 |--------|------|
-| `typeof null === "object"` | <v-click>**true** ✅ 历史 bug！</v-click> |
-| `0.1 + 0.2 === 0.3` | <v-click>**false** ❌ IEEE 754</v-click> |
-| `NaN === NaN` | <v-click>**false** ❌ 唯一不等于自身的值</v-click> |
-| `typeof NaN === "number"` | <v-click>**true** ✅ "无效数值"</v-click> |
-| `-0 === 0` | <v-click>**true** ✅ 被隐藏的负零</v-click> |
-| `new Boolean(false) ? "truthy" : "falsy"` | <v-click>**"truthy"** 对象永远是真值！</v-click> |
+| `typeof null === "object"` | <v-click>**true** ✅ 底层用 0 表示 object，null 也是 0，所以被误判</v-click> |
+| `0.1 + 0.2 === 0.3` | <v-click>**false** ❌ 0.1 在二进制里是无限小数，加起来有微小误差</v-click> |
+| `NaN === NaN` | <v-click>**false** ❌ NaN 表示"算坏了"，两个算坏的结果不一定相同</v-click> |
+| `typeof NaN === "number"` | <v-click>**true** ✅ NaN 是数学运算失败的结果，仍属于数字体系</v-click> |
+| `-0 === 0` | <v-click>**true** ✅ === 和 toString 都把 -0 伪装成 0</v-click> |
+| `new Boolean(false) ? "truthy" : "falsy"` | <v-click>**"truthy"** new Boolean(false) 是对象不是 false，JS 中只有原始值能为假</v-click> |
 
 </div>
 
@@ -58,7 +58,7 @@ class: text-center
 
 <div class="mt-4 text-lg opacity-80">
 
-如果你没有全答对，这次分享就是为你准备的！
+没全对？这次分享为你而来！
 
 </div>
 
@@ -72,7 +72,7 @@ layout: section
 
 <div class="text-2xl mt-4 opacity-80">
 
-变量没有类型，值才有类型
+变量没有类型，值才有类型 — 同一个变量可以先存数字再存字符串，typeof 检测的是当前值
 
 </div>
 
@@ -121,14 +121,14 @@ graph TD
 
 <div class="text-xs opacity-60 mt-2">
 
-*function 是 object 的子类型; bigint 是 ES2020 新增
+*function → object 子类型
 
 </div>
 
 ::right::
 
 ```javascript {monaco}
-// typeof 返回值 — 注意不对称！
+// typeof 返回值
 typeof undefined   // "undefined"
 typeof true        // "boolean"
 typeof 42          // "number"
@@ -137,9 +137,9 @@ typeof { a: 1 }    // "object"
 typeof Symbol()    // "symbol"
 typeof function(){} // "function" ← 子类型
 
-// ⚠️ 两个"异类"
+// ⚠️ 异类
 typeof null        // "object" ← BUG!
-typeof []          // "object" ← 数组没有专属类型
+typeof []          // "object" ← 无专属类型
 
 // ES2020 扩展
 typeof 42n         // "bigint"
@@ -149,7 +149,8 @@ typeof 42n         // "bigint"
 
 <v-click>
 
-**注意：** 八种类型中，typeof 能准确识别七种，唯独 `null` 是个例外。而 `function` 虽然不是顶层类型，typeof 却给了它专属返回值。
+typeof 识别七种，`null` 例外
+`function` 非顶层类型却有专属返回值
 
 </v-click>
 
@@ -163,19 +164,19 @@ layout: default
 
 <div class="text-sm">
 
-**这是 JavaScript 最著名的 bug，从第一版就存在，可能永远不会被修复。**
+**JS 最著名的 bug，V1 起至今未修复。**
 
-**类型标签机制 (Type Tag)：** 最初实现中，值以 32 位存储，低 1-3 bits 为类型标签：
+**类型标签 (Type Tag)：** 最初 SpiderMonkey 引擎在 C 层用 32 位存储值，其中最低位标记类型：
 
 `000` → object | `1` → int | `010` → double | `100` → string | `110` → boolean
 
-`null` 的机器码是空指针 `0x00`，类型标签也是 `000` — 和 object 一模一样！
+`null` → 空指针 `0x00` → 标签 `000` → 与 object 相同！
 
 ```javascript {monaco}
-// 安全判断 null 的模式
+// 安全判断 null
 var a = null;
-(!a && typeof a === "object"); // true — 唯一的 falsy object
-// 曾有 TC39 提案修复，但因会破坏太多现有代码而被否决
+(!a && typeof a === "object"); // true — null 是唯一在 if 中为假却 typeof 为 "object" 的值
+// TC39 提案已否决，怕破坏兼容
 ```
 
 </div>
@@ -195,7 +196,7 @@ layoutClass: gap-4
 var a;
 typeof a; // "undefined"
 a;        // undefined (可以访问)
-// undefined 是一个值！类型为 undefined 的只有它一个值
+// undefined 类似一个写着"空"的标签——它本身是个东西，不是什么都没有
 ```
 
 <v-click>
@@ -221,7 +222,7 @@ a;        // undefined (可以访问)
 ```javascript {monaco}
 // b 从未用 var/let/const 声明
 b; // ReferenceError: b is not defined
-// ⚠️ "not defined" 有误导性，应该叫 "not declared"
+// ⚠️ 报错说 "not defined" 容易和 undefined 混淆，实际含义是"从未声明"
 ```
 
 <v-click>
@@ -230,8 +231,8 @@ b; // ReferenceError: b is not defined
 
 ```javascript {monaco}
 // typeof 对 undeclared 变量不会报错！
-typeof b; // "undefined" ← 不是 ReferenceError
-// 这个"bug"反而是有用的安全机制
+typeof b; // "undefined" ← 不报错
+// 这让我们可以安全地检测变量是否存在（下页详解）
 ```
 
 </v-click>
@@ -288,12 +289,12 @@ layout: default
 |--------|------|
 | `typeof void 0` | <v-click>**"undefined"** void 总返回 undefined</v-click> |
 | `typeof (() => {})` | <v-click>**"function"** 箭头函数也是函数</v-click> |
-| `typeof class C {}` | <v-click>**"function"** class 是语法糖</v-click> |
+| `typeof class C {}` | <v-click>**"function"** class 底层仍是函数，只是写法更像传统面向对象</v-click> |
 | `typeof 42n` | <v-click>**"bigint"** ES2020</v-click> |
 | `typeof Symbol.iterator` | <v-click>**"symbol"**</v-click> |
 | `typeof null` | <v-click>**"object"** 经典 bug</v-click> |
 | `typeof typeof 42` | <v-click>**"string"** typeof 总返回字符串</v-click> |
-| `typeof NaN` | <v-click>**"number"** "不是数字"的数字</v-click> |
+| `typeof NaN` | <v-click>**"number"** NaN 是数学运算出错的返回值，仍归在 number 类型里</v-click> |
 
 </div>
 
@@ -375,15 +376,15 @@ layout: default
 var a = [];
 a[0] = 1;
 a[2] = 3;  // 跳过 a[1]
-a[1];      // undefined（但不是真正的 undefined 值！）
-a.length;  // 3 — 空槽和显式 undefined 不同
+a[1];      // undefined（读取时返回 undefined，但槽位是空的 — 遍历方法如 map/forEach 会跳过空槽）
+a.length;  // 3
 ```
 
 **陷阱二：字符串键名**
 
 ```javascript {monaco}
 var a = [];
-a["13"] = 42;       // ⚠️ "13" 被转换为数字索引
+a["13"] = 42;       // 转为数字索引
 a.length;           // 14！不是 1
 a["foobar"] = "baz";
 a.length;           // 14（非数字键不影响 length）
@@ -431,8 +432,8 @@ a.toUpperCase(); // "FOO"  a; // 仍是 "foo"
 **字符串反转的陷阱**
 
 ```javascript {monaco}
-"foo".split("").reverse().join(""); // "oof" — OK?
-// ⚠️ Unicode 会翻车！组合字符错位
+"foo".split("").reverse().join(""); // "oof"
+// ⚠️ 含 emoji 或组合字符（如 é = e + ◌́ ）时 split("") 会拆散它们导致乱码
 // ✅ ES6: [...str].reverse().join("")
 ```
 
@@ -458,13 +459,13 @@ layout: default
 
 <div class="text-sm">
 
-**JavaScript 的 number 基于 IEEE 754 "双精度"64 位格式：** 1bit 符号 + 11bits 指数 + 52bits 尾数
+**JS 所有数字都是 64 位浮点（IEEE 754 双精度）：** 52 位尾数决定了精度上限 — 这就是为什么大整数和小数都会丢精度
 
 **有趣的数字语法：**
 
 ```javascript {monaco}
 // 小数点的二义性
-42.toFixed(3);  // SyntaxError — 引擎把 . 当成小数点
+42.toFixed(3);  // SyntaxError — 词法分析时 42. 被贪婪匹配为浮点字面量，后面的 toFixed 无法解析
 42..toFixed(3); // "42.000" — 第一个.是小数点，第二个.是属性访问
 (42).toFixed(3); // "42.000"
 // 其他进制：0xf3 (hex) / 0o363 (octal) / 0b11110011 (binary) → 243
@@ -485,7 +486,7 @@ layout: center
 ```javascript {monaco}
 0.1 + 0.2 === 0.3; // false!
 0.1 + 0.2; // 0.30000000000000004
-// 因为 0.1 和 0.2 在二进制浮点中都是无限循环小数
+// 就像 1/3 写成小数 0.333... 永远写不完一样，0.1 在二进制里也写不完，截断后就有误差
 ```
 
 </div>
@@ -498,7 +499,7 @@ layout: center
 
 ```javascript {monaco}
 function numbersCloseEnoughToEqual(n1, n2) {
-  return Math.abs(n1 - n2) < Number.EPSILON; // 2^-52
+  return Math.abs(n1 - n2) < Number.EPSILON; // 2^-52，双精度浮点能表示的最小差值，误差小于它就视为相等
 }
 numbersCloseEnoughToEqual(0.1 + 0.2, 0.3); // true
 ```
