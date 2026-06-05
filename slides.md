@@ -45,12 +45,12 @@ class: text-center
 
 | 表达式 | 结果 |
 |--------|------|
-| `typeof null === "object"` | <v-click>**true** ✅ 底层用 0 表示 object，null 也是 0，所以被误判</v-click> |
-| `0.1 + 0.2 === 0.3` | <v-click>**false** ❌ 0.1 在二进制里是无限小数，加起来有微小误差</v-click> |
-| `NaN === NaN` | <v-click>**false** ❌ NaN 表示"算坏了"，两个算坏的结果不一定相同</v-click> |
-| `typeof NaN === "number"` | <v-click>**true** ✅ NaN 是数学运算失败的结果，仍属于数字体系</v-click> |
+| `typeof null === "object"` | <v-click>**true** ✅ null 底层标签与 object 相同</v-click> |
+| `0.1 + 0.2 === 0.3` | <v-click>**false** ❌ 二进制无限小数，有精度误差</v-click> |
+| `NaN === NaN` | <v-click>**false** ❌ NaN 不等于任何值包括自身</v-click> |
+| `typeof NaN === "number"` | <v-click>**true** ✅ NaN 仍属于数字类型</v-click> |
 | `-0 === 0` | <v-click>**true** ✅ === 和 toString 都把 -0 伪装成 0</v-click> |
-| `new Boolean(false) ? "truthy" : "falsy"` | <v-click>**"truthy"** new Boolean(false) 是封装对象不是 false，对象永远是 truthy（真值）</v-click> |
+| `new Boolean(false) ? "truthy" : "falsy"` | <v-click>**"truthy"** 包装对象永远是真值</v-click> |
 
 </div>
 
@@ -72,7 +72,7 @@ layout: section
 
 <div class="text-2xl mt-4 opacity-80">
 
-变量没有类型，值才有类型 — 同一个变量可以先存数字再存字符串，typeof 检测的是当前值
+变量没有类型，值才有类型 — typeof 检测的是当前值的类型
 
 </div>
 
@@ -149,7 +149,7 @@ typeof 42n         // "bigint"
 
 <v-click>
 
-typeof 识别七种，`null` 例外
+typeof 识别八种，`null` 例外
 `function` 非顶层类型却有专属返回值
 
 </v-click>
@@ -166,9 +166,9 @@ layout: default
 
 **JS 最著名的 bug，V1 起至今未修复。**
 
-**类型标签 (Type Tag)：** 最初 SpiderMonkey 引擎在 C 层用 32 位存储值，其中最低位标记类型：
+**类型标签 (Type Tag)：** SpiderMonkey 用 32 位存储值，最低位标记类型：
 
-`000` → object | `1` → int | `010` → double | `100` → string | `110` → boolean
+`000` → object | `1` → int | `010` → double | `100` → string | `110` → boolean（int 用最低 1 位标记，其余用最低 3 位）
 
 `null` → 空指针 `0x00` → 标签 `000` → 与 object 相同！
 
@@ -196,7 +196,7 @@ layoutClass: gap-4
 var a;
 typeof a; // "undefined"
 a;        // undefined (可以访问)
-// undefined 类似一个写着"空"的标签——它本身是个东西，不是什么都没有
+// undefined 是个值，不是"什么都没有"
 ```
 
 <v-click>
@@ -222,7 +222,7 @@ a;        // undefined (可以访问)
 ```javascript {monaco}
 // b 从未用 var/let/const 声明
 b; // ReferenceError: b is not defined
-// ⚠️ 报错说 "not defined" 容易和 undefined 混淆，实际含义是"从未声明"
+// ⚠️ "not defined" 其实指"从未声明"
 ```
 
 <v-click>
@@ -289,12 +289,12 @@ layout: default
 |--------|------|
 | `typeof void 0` | <v-click>**"undefined"** void 总返回 undefined</v-click> |
 | `typeof (() => {})` | <v-click>**"function"** 箭头函数也是函数</v-click> |
-| `typeof class C {}` | <v-click>**"function"** class 底层仍是函数，只是写法更像传统面向对象</v-click> |
+| `typeof class C {}` | <v-click>**"function"** class 底层是函数</v-click> |
 | `typeof 42n` | <v-click>**"bigint"** ES2020</v-click> |
 | `typeof Symbol.iterator` | <v-click>**"symbol"**</v-click> |
 | `typeof null` | <v-click>**"object"** 经典 bug</v-click> |
 | `typeof typeof 42` | <v-click>**"string"** typeof 总返回字符串</v-click> |
-| `typeof NaN` | <v-click>**"number"** NaN 是数学运算出错的返回值，仍归在 number 类型里</v-click> |
+| `typeof NaN` | <v-click>**"number"** 无效数值仍属 number</v-click> |
 
 </div>
 
@@ -434,7 +434,7 @@ a.toUpperCase(); // "FOO"  a; // 仍是 "foo"
 
 ```javascript {monaco}
 "foo".split("").reverse().join(""); // "oof"
-// ⚠️ 含 emoji 或组合字符（如 é = e + ◌́ ）时 split("") 会拆散它们导致乱码
+// ⚠️ emoji/组合字符会被 split("") 拆散
 // ✅ ES6: [...str].reverse().join("")
 ```
 
@@ -460,7 +460,7 @@ layout: default
 
 <div class="text-sm">
 
-**JS 所有数字都是 64 位浮点（IEEE 754 双精度）：** 52 位尾数决定了精度上限 — 这就是为什么大整数和小数都会丢精度
+**JS 数字都是 IEEE 754 双精度浮点：** 52 位尾数决定精度上限
 
 **有趣的数字语法：**
 
@@ -487,7 +487,7 @@ layout: center
 ```javascript {monaco}
 0.1 + 0.2 === 0.3; // false!
 0.1 + 0.2; // 0.30000000000000004
-// 就像 1/3 写成小数 0.333... 永远写不完一样，0.1 在二进制里也写不完，截断后就有误差
+// 0.1 和 0.2 在二进制中都是无限小数，截断后有误差
 ```
 
 </div>
@@ -538,12 +538,12 @@ Number.isSafeInteger(9007199254740991 + 1); // false
 ```javascript {monaco}
 const big = 9007199254740991n + 2n; // 9007199254740993n ✅
 typeof big; // "bigint" — 第八种类型
-// BigInt 不能和 Number 混合运算：1n + 1 → TypeError ❌；1n + BigInt(1) → 2n ✅
+// BigInt 不能和 Number 混算：1n+1 报错，需 1n+BigInt(1)
 ```
 
 <div class="mt-2 p-2 bg-yellow-500 bg-opacity-10 rounded">
 
-**业务场景：** 后端大 ID（雪花ID）超 2^53 时，JSON.parse 丢精度。解决：让后端返回字符串，或用 `json-bigint` 库。
+**业务场景：** 雪花ID 超 2^53 时 JSON.parse 丢精度，让后端返回字符串或用 json-bigint。
 
 </div>
 
@@ -562,7 +562,7 @@ layoutClass: gap-4
 
 | | `null` | `undefined` |
 |---|---|---|
-| 含义 | 曾赋过值，当前为空 | 从未赋值 |
+| 含义 | 主动赋值为空（有意为空） | 从未赋值 |
 | typeof | `"object"` (bug) | `"undefined"` |
 | 转数字 | `0` | `NaN` |
 
@@ -785,7 +785,7 @@ function reducer(state, action) {
 }
 ```
 
-**ES2024: structuredClone — 原生深拷贝**
+**structuredClone — 原生深拷贝**
 
 ```javascript {monaco}
 const clone = structuredClone({ a: 1, b: { c: 2 }, d: new Date() });
@@ -805,7 +805,7 @@ layout: center
 
 | 表达式 | 结果 |
 |--------|------|
-| `[,,,].length` | <v-click>**3** 末尾逗号不算</v-click> |
+| `[,,,].length` | <v-click>**3** [,,,] 等价于 [empty, empty, empty,]，trailing comma 不额外计数</v-click> |
 | `"abc"[1] = "B"; "abc"[1]` | <v-click>**"b"** 字符串不可变</v-click> |
 | `0.1 + 0.2 > 0.3` | <v-click>**true**</v-click> |
 | `Number.isNaN("NaN")` | <v-click>**false** 字符串不是 NaN</v-click> |
@@ -1042,7 +1042,7 @@ layout: default
 ```javascript {monaco}
 typeof Function.prototype; // "function" — 空函数，可以调用
 Array.prototype;           // [] — 空数组
-String.prototype;          // "" — 空字符串
+String.prototype;          // String{''}  — 空字符串对象
 RegExp.prototype.toString(); // "/(?:)/" — 空正则
 ```
 
@@ -1050,6 +1050,7 @@ RegExp.prototype.toString(); // "/(?:)/" — 空正则
 
 ```javascript {monaco}
 // ❌ function foo(arr = Array.prototype, fn = Function.prototype) {}
+// 因为原型是已存在的空值单例，有人曾用它避免每次创建新对象
 // ✅ 现代写法：
 function foo(arr = [], fn = () => {}) {}
 ```
@@ -1070,7 +1071,7 @@ layoutClass: gap-4
 | 表达式 | 结果 |
 |--------|------|
 | `typeof new String("abc")` | <v-click>**"object"** 包装对象</v-click> |
-| `new Boolean(false) == false` | <v-click>**true** == 会拆封</v-click> |
+| `new Boolean(false) == false` | <v-click>**true** == 触发 ToPrimitive 调 valueOf() 得 false</v-click> |
 | `new Boolean(false) === false` | <v-click>**false** 类型不同</v-click> |
 | `Array(1,2,3).length` | <v-click>**3** 多参数是元素</v-click> |
 | `Array(3).length` | <v-click>**3** 单数字是长度</v-click> |
