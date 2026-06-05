@@ -50,7 +50,7 @@ class: text-center
 | `NaN === NaN` | <v-click>**false** ❌ NaN 表示"算坏了"，两个算坏的结果不一定相同</v-click> |
 | `typeof NaN === "number"` | <v-click>**true** ✅ NaN 是数学运算失败的结果，仍属于数字体系</v-click> |
 | `-0 === 0` | <v-click>**true** ✅ === 和 toString 都把 -0 伪装成 0</v-click> |
-| `new Boolean(false) ? "truthy" : "falsy"` | <v-click>**"truthy"** new Boolean(false) 是对象不是 false，JS 中只有原始值能为假</v-click> |
+| `new Boolean(false) ? "truthy" : "falsy"` | <v-click>**"truthy"** new Boolean(false) 是封装对象不是 false，对象永远是 truthy（真值）</v-click> |
 
 </div>
 
@@ -317,7 +317,7 @@ layout: default
 ```mermaid
 mindmap
   root((类型 Types))
-    七种内置类型
+    八种内置类型
       原始类型 Primitive
         undefined
         null
@@ -325,6 +325,7 @@ mindmap
         number
         string
         symbol ES6
+        bigint ES2020
       对象类型
         object
         function 子类型
@@ -499,7 +500,7 @@ layout: center
 
 ```javascript {monaco}
 function numbersCloseEnoughToEqual(n1, n2) {
-  return Math.abs(n1 - n2) < Number.EPSILON; // 2^-52，双精度浮点能表示的最小差值，误差小于它就视为相等
+  return Math.abs(n1 - n2) < Number.EPSILON; // 机器精度 (2^-52)，即 1 与下一个可表示浮点数的差值，误差小于它就视为相等
 }
 numbersCloseEnoughToEqual(0.1 + 0.2, 0.3); // true
 ```
@@ -537,7 +538,7 @@ Number.isSafeInteger(9007199254740991 + 1); // false
 ```javascript {monaco}
 const big = 9007199254740991n + 2n; // 9007199254740993n ✅
 typeof big; // "bigint" — 第八种类型
-// BigInt 不能和 Number 混合运算：1n + BigInt(1) → 2n ✅
+// BigInt 不能和 Number 混合运算：1n + 1 → TypeError ❌；1n + BigInt(1) → 2n ✅
 ```
 
 <div class="mt-2 p-2 bg-yellow-500 bg-opacity-10 rounded">
@@ -1094,7 +1095,7 @@ mindmap
       Error 调用栈
       Symbol 不能 new
     内部属性
-      Class / toString.call
+      [[Class]] / toString.call
       toStringTag
 ```
 
