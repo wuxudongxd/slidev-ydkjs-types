@@ -149,8 +149,7 @@ typeof 42n         // "bigint"
 
 <v-click>
 
-typeof 识别八种，`null` 例外
-`function` 非顶层类型却有专属返回值
+typeof 识别八种，`null` 例外。`function` 非顶层类型却有专属返回值。
 
 </v-click>
 
@@ -175,8 +174,8 @@ layout: default
 ```javascript {monaco}
 // 安全判断 null
 var a = null;
-(!a && typeof a === "object"); // true — null 是唯一在 if 中为假却 typeof 为 "object" 的值
-// TC39 提案已否决，怕破坏兼容
+(!a && typeof a === "object"); // true
+// 曾有提案修复 typeof null 返回 "null"，TC39 否决，因为会破坏大量现有代码
 ```
 
 </div>
@@ -250,8 +249,8 @@ layout: default
 **场景一：DEBUG 模式检查**
 
 ```javascript {monaco}
-if (DEBUG) { console.log("调试模式"); } // ❌ DEBUG 未声明会报错
-if (typeof DEBUG !== "undefined") { console.log("调试模式"); } // ✅
+if (DEBUG) { console.log("调试"); } // ❌ DEBUG 未声明直接 ReferenceError
+if (typeof DEBUG !== "undefined") { console.log("调试"); } // ✅ 仅检测是否声明过
 ```
 
 **场景二：Polyfill 模式**
